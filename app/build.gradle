@@ -8,6 +8,7 @@ android {
     defaultConfig {
         applicationId "com.askey.camera"
         minSdkVersion 24
+        //noinspection OldTargetApi
         targetSdkVersion 27
         versionCode 1
         versionName "1.0"
@@ -41,7 +42,8 @@ tasks.withType(JavaCompile) {
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-
+    //https://mvnrepository.com/artifact/org.apache.poi/poi
+    implementation group: 'org.apache.poi', name: 'poi', version: '3.12'
     //noinspection GradleCompatible
     implementation 'com.android.support.constraint:constraint-layout:1.0.2'
     //noinspection GradleCompatible
