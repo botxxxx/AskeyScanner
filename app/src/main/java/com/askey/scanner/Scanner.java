@@ -1,4 +1,4 @@
-package com.askey.camera;
+package com.askey.scanner;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
@@ -6,21 +6,28 @@ import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.os.Handler;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.widget.EditText;
+import android.widget.TextView;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends Activity {
+public class Scanner extends Activity {
 
+    private int debug = 0;
+    private String TAG = "Ready";
     private String XLS = Utils.getCalendarTime() + ".csv";
-    private ArrayList<String> reader;
+    private EditText mView;
 
-    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
         if (checkPermission()) {
             showPermission();
         } else {
@@ -64,16 +71,33 @@ public class MainActivity extends Activity {
 
     private void getStart() {
 
-        reader = new ArrayList();
-        reader.add("uhAHRK5nXBHQ8yBK");
-        reader.add("mC5DEWcHVgfbea5C");
-        reader.add("FwHsaKTb5KgSTgzf");
-        reader.add("C4VZgySR7QDwCGy6");
-        reader.add("VgGBH8CxSZ8MGuK8");
+        Handler mHandler = new Handler() {
+            public void handleMessage(android.os.Message msg) {
+                String args = mView.getText().toString();
+                if (!(args.equals((debug == 0) ? "Ready" : TAG))) {
+                    String[] TAGs = args.split((debug == 0) ? "Ready" : TAG);
+                    runOnUiThread(() -> {
+                        mView.setText(TAGs.length == 1 ? TAGs[0] : TAG);
+                        TAG = mView.getText().toString();
+                        debug++;
+                        ((TextView) findViewById(R.id.mCount)).setText(debug + "");
+                    });
+                }
+            }
+        };
+        mView = findViewById(R.id.mView);
+        mView.addTextChangedListener(new TextWatcher() {
+            public void afterTextChanged(Editable s) {
+                mHandler.obtainMessage().sendToTarget();
+            }
 
-        for (String msg : reader) {
-            addCVS(msg+ "\r\n");
-        }
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+            }
+        });
+//            addCVS(msg+ "\r\n");
     }
 
     private void addCVS(String args) {
@@ -81,7 +105,7 @@ public class MainActivity extends Activity {
 
             File file = new File(Utils.getPath(), XLS);
             try {
-                FileOutputStream fOut = new FileOutputStream(file,file.exists());
+                FileOutputStream fOut = new FileOutputStream(file, file.exists());
                 fOut.write(args.getBytes());
                 fOut.flush();
                 fOut.close();

@@ -1,4 +1,4 @@
-package com.askey.camera;
+package com.askey.scanner;
 
 import android.annotation.SuppressLint;
 import java.util.Calendar;

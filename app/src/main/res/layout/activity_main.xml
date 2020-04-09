@@ -1,13 +1,34 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity">
+    android:background="@color/gray_dark"
+    tools:context="com.askey.scanner.Scanner"
+    tools:ignore="HardcodedText,SpUsage">
 
     <TextView
+        android:id="@+id/mCount"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentBottom="true"
+        android:textColor="@color/black"
+        android:padding="15dp"
+        android:textSize="40dp" />
+
+    <EditText
+        android:id="@+id/mView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:text="Hello World!" />
+        android:gravity="center"
+        android:text="Ready"
+        android:textColor="@color/white"
+        android:textSize="35dp" />
 
-</LinearLayout>
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/gone" />
+
+</RelativeLayout>
