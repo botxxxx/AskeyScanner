@@ -1,6 +1,6 @@
 <resources>
     <!--
-        not yet
+        1.0.0 scan barcode to internal shared storage -> AskeyScan.csv
     -->
-    <string name="app_name">AskeyScanner(v1.0.0)</string>
+    <string name="app_name">AskeyScan(v1.0.0)</string>
 </resources>

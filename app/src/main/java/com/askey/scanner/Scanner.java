@@ -21,7 +21,7 @@ public class Scanner extends Activity {
 
     private int debug = 0;
     private String TAG = "Ready";
-    private String XLS = Utils.getCalendarTime() + ".csv";
+    private String XLS = "AskeyScan.csv";
     private EditText mView;
 
     protected void onCreate(Bundle savedInstanceState) {
@@ -80,6 +80,7 @@ public class Scanner extends Activity {
                         mView.setText(TAGs.length == 1 ? TAGs[0] : TAG);
                         TAG = mView.getText().toString();
                         debug++;
+                        addCVS(TAG + "\r\n");
                         ((TextView) findViewById(R.id.mCount)).setText(debug + "");
                     });
                 }
@@ -97,7 +98,6 @@ public class Scanner extends Activity {
             public void onTextChanged(CharSequence s, int start, int before, int count) {
             }
         });
-//            addCVS(msg+ "\r\n");
     }
 
     private void addCVS(String args) {

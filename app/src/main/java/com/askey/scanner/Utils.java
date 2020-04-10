@@ -21,7 +21,7 @@ public class Utils {
     }
 
     public static String getPath() {
-        String path = "/storage/emulated/0/DCIM/";
+        String path = "/storage/emulated/0/";
         return path;
     }
 
