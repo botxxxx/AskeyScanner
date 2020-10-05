@@ -1,12 +1,20 @@
 apply plugin: 'com.android.application'
 
 android {
-
     compileSdkVersion 28
-    buildToolsVersion "28.0.3"
+    buildToolsVersion "29.0.2"
+
+    signingConfigs {
+        debug {
+            storeFile file('D:\\ANDROID\\AskeyScan\\app\\libs\\debug.keystore')
+            storePassword 'android'
+            keyPassword 'android'
+            keyAlias 'platform'
+        }
+    }
 
     defaultConfig {
-        applicationId "com.askey.scanner"
+        applicationId "com.askey.mobilesafe"
         minSdkVersion 24
         //noinspection OldTargetApi
         targetSdkVersion 27

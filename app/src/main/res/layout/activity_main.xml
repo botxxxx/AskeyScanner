@@ -1,34 +1,63 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/gray_dark"
-    tools:context="com.askey.scanner.Scanner"
-    tools:ignore="HardcodedText,SpUsage">
+    android:orientation="vertical"
+    tools:context="com.askey.scanner.com.askey.mobilesafe.MainActivity"
+    tools:ignore="HardcodedText,SpUsage,ObsoleteLayoutParam,RtlHardcoded">
 
-    <TextView
-        android:id="@+id/mCount"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentBottom="true"
-        android:textColor="@color/black"
-        android:padding="15dp"
-        android:textSize="40dp" />
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
 
-    <EditText
-        android:id="@+id/mView"
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:id="@+id/mCount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentTop="true"
+                android:padding="5dp"
+                android:textColor="@color/black"
+                android:textSize="25dp" />
+
+            <EditText
+                android:id="@+id/mView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:layout_marginTop="3dp"
+                android:layout_marginRight="20dp"
+                android:layout_marginBottom="3dp"
+                android:gravity="top|center_horizontal"
+                android:text="Ready"
+                android:textColor="@color/white"
+                android:textSize="25dp" />
+
+        </TableRow>
+
+        <Button
+            android:id="@+id/mButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/gone" />
+    </RelativeLayout>
+
+    <TableRow
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:gravity="center"
-        android:text="Ready"
-        android:textColor="@color/white"
-        android:textSize="35dp" />
-
-    <Button
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@color/gone" />
-
-</RelativeLayout>
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:layout_marginBottom="20dp"
+        android:background="@drawable/rounded_white_view">
+        <ListView
+            android:id="@+id/listView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+    </TableRow>
+</LinearLayout>
