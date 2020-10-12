@@ -6,7 +6,7 @@ android {
 
     signingConfigs {
         debug {
-            storeFile file('D:\\ANDROID\\AskeyScan\\app\\libs\\debug.keystore')
+            storeFile file('D:\\ANDROID\\AskeySafe\\app\\libs\\debug.keystore')
             storePassword 'android'
             keyPassword 'android'
             keyAlias 'platform'
@@ -14,7 +14,7 @@ android {
     }
 
     defaultConfig {
-        applicationId "com.askey.mobilesafe"
+        applicationId "com.askey.safe"
         minSdkVersion 24
         //noinspection OldTargetApi
         targetSdkVersion 27

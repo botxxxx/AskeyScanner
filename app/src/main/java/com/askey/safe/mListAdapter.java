@@ -1,4 +1,4 @@
-package com.askey.mobilesafe;
+package com.askey.safe;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -12,10 +12,10 @@ import java.util.ArrayList;
 
 public class mListAdapter extends BaseAdapter {
 
-    private ArrayList<mTag> arrayList;
+    private ArrayList<String> arrayList;
     private Context context;
 
-    public mListAdapter(Context context, ArrayList<mTag> arrayList) {
+    public mListAdapter(Context context, ArrayList<String> arrayList) {
         this.context = context;
         this.arrayList = arrayList;
     }
@@ -26,7 +26,7 @@ public class mListAdapter extends BaseAdapter {
 
     public Object getItem(int position) {
        View convertView = LayoutInflater.from(context).inflate(R.layout.style_vertical_item, null);
-        ((TextView) convertView.findViewById(R.id.vertical_textView)).setText(arrayList.get(position).id + ", " + arrayList.get(position).tag);
+        ((TextView) convertView.findViewById(R.id.text)).setText(arrayList.get(position));
         return convertView;
     }
 
@@ -37,7 +37,7 @@ public class mListAdapter extends BaseAdapter {
     @SuppressLint({"ViewHolder", "InflateParams"})
     public View getView(int position, View convertView, ViewGroup parent) {
         convertView = LayoutInflater.from(context).inflate(R.layout.style_vertical_item, null);
-        ((TextView) convertView.findViewById(R.id.vertical_textView)).setText(arrayList.get(position).id + ", " + arrayList.get(position).tag);
+        ((TextView) convertView.findViewById(R.id.text)).setText(arrayList.get(position));
         return convertView;
     }
 }
