@@ -75,6 +75,9 @@ public class SilentInstallApkAsyncTask extends AsyncTask<File, Void, Boolean> {
         return false;
     }
 
+    /**
+     * After completing background task
+     **/
     protected void onPostExecute(Boolean success) {
         if (!success)
             Toast.makeText(mContext, "background install is failed!", Toast.LENGTH_SHORT).show();

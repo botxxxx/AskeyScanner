@@ -11,8 +11,11 @@ import android.os.AsyncTask;
 import android.util.Log;
 import android.widget.Toast;
 
+import java.io.File;
+
 import static android.content.ContentValues.TAG;
 import static com.askey.safe.MainActivity.getListOfApplications;
+import static com.askey.safe.Utils.getSDPath;
 
 public class SilentUninstallApkAsyncTask extends AsyncTask<String, Void, Boolean> {
     @SuppressLint("StaticFieldLeak")

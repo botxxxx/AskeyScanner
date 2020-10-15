@@ -2,7 +2,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     package="com.askey.safe"
-    android:sharedUserId="android.uid.system">
+    android:sharedUserId="android.uid.system"
+    tools:ignore="ExportedReceiver">
 
     <uses-permission
         android:name="android.permission.INSTALL_PACKAGES"

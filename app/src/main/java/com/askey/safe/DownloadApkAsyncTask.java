@@ -1,58 +1,89 @@
 package com.askey.safe;
 
+import android.annotation.SuppressLint;
+import android.app.ProgressDialog;
+import android.content.Context;
 import android.os.AsyncTask;
-import android.os.Environment;
 import android.util.Log;
 
 import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.net.URL;
-import java.net.URLConnection;
 
-public class DownloadApkAsyncTask extends AsyncTask<String, String, String> {
+import jcifs.smb.SmbFile;
+import jcifs.smb.SmbFileInputStream;
+
+import static com.askey.safe.MainActivity.read;
+import static com.askey.safe.MainActivity.updateUI;
+import static com.askey.safe.Utils.getSDPath;
+
+public class DownloadApkAsyncTask extends AsyncTask<apkManager, String, String> {
+    @SuppressLint("StaticFieldLeak")
+    public static Context mContext;
+    private ProgressDialog pDialog;
+    private String point = "";
+    private String apkName;
+
+    public DownloadApkAsyncTask(Context context) {
+        mContext = context;
+    }
+
+    @SuppressLint("AuthLeak")
+    private static final String SMB_SERVER = "smb://hongren_su:id40123@10.1.96.111/";
 
     /**
      * Before starting background thread Show Progress Bar Dialog
-     * */
+     */
     protected void onPreExecute() {
         super.onPreExecute();
-//        showDialog(progress_bar_type);
+//        pDialog = new ProgressDialog(mContext);
+//        pDialog.setMessage("Downloading file. Please wait...");
+//        pDialog.setIndeterminate(false);
+//        pDialog.setMax(100);
+//        pDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+//        pDialog.setCancelable(true);
+//        pDialog.show();
     }
 
     /**
      * Downloading file in background thread
-     * */
-    protected String doInBackground(String... f_url) {
+     */
+    protected String doInBackground(apkManager... apk) {
+        File file = null;
         int count;
+        InputStream input = null;
+        OutputStream output = null;
         try {
-            URL url = new URL(f_url[0]);
-            URLConnection connection = url.openConnection();
-            connection.connect();
-
-            // this will be useful so that you can show a tipical 0-100%
-            // progress bar
-            int lenghtOfFile = connection.getContentLength();
-
+            apkName = apk[0].apkName;
+            if (point.equals("")) {
+                point = read.size() + "";
+                read.add(new apkItem("Download:" + apkName, true));
+            }
+            SmbFile smbfile = new SmbFile(SMB_SERVER + apk[0].apkUrl + apk[0].apkName);
+            file = new File(getSDPath() + apk[0].apkName);
+            if (!file.exists()) {
+                try {
+                    file.createNewFile();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+            int lenghtOfFile = smbfile.getContentLength();
             // download the file
-            InputStream input = new BufferedInputStream(url.openStream(),
-                    8192);
-
-            // Output stream
-            OutputStream output = new FileOutputStream(Environment
-                    .getExternalStorageDirectory().toString()
-                    + "/2011.kml");
-
-            byte data[] = new byte[1024];
-
+            input = new BufferedInputStream(new SmbFileInputStream(smbfile), 8192);
+            output = new BufferedOutputStream(new FileOutputStream(file.getPath()));
+            byte[] data = new byte[1024];
             long total = 0;
 
             while ((count = input.read(data)) != -1) {
                 total += count;
                 // publishing the progress....
                 // After this onProgressUpdate will be called
-                publishProgress("" + (int) ((total * 100) / lenghtOfFile));
+                publishProgress((int) (total * 100) / lenghtOfFile + "");
 
                 // writing data to file
                 output.write(data, 0, count);
@@ -60,32 +91,52 @@ public class DownloadApkAsyncTask extends AsyncTask<String, String, String> {
 
             // flushing output
             output.flush();
-
-            // closing streams
             output.close();
             input.close();
 
         } catch (Exception e) {
-            Log.e("Error: ", e.getMessage());
+            Log.e("Error ", e.getMessage());
+            file.delete();
+            return "";
+        } finally {
+            // closing streams
+            try {
+                if (output != null)
+                    output.close();
+                if (input != null) {
+                    input.close();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
-
-        return null;
+        return file.getName();
     }
 
     /**
      * Updating progress bar
-     * */
-    protected void onProgressUpdate(String... progress) {
-        // setting progress percentage
-        // pDialog.setProgress(Integer.parseInt(progress[0]));
+     */
+
+    protected void onProgressUpdate(String... values) {
+        super.onProgressUpdate(values);
+        if (values != null && values.length > 0) {
+            int progress = Integer.parseInt(values[0]);
+            read.set(Integer.parseInt(point), new apkItem("Download:" + apkName, progress));
+            updateUI(mContext);
+            Log.e("Download", apkName + " " + progress + "%");
+        }
     }
 
     /**
      * After completing background task Dismiss the progress dialog
-     * **/
-    protected void onPostExecute(String file_url) {
+     **/
+    protected void onPostExecute(String progress) {
+        if (progress.equals(""))
+            Log.e("Download", apkName + " filed");
         // dismiss the dialog after the file was downloaded
-        // dismissDialog(progress_bar_type);
 
+        read.set(Integer.parseInt(point), new apkItem(apkName + (apkName.equals(progress) ? " completed" : " filed")));
+        updateUI(mContext);
+//        Toast.makeText(mContext, "apk:"+file_url, Toast.LENGTH_SHORT).show();
     }
 }

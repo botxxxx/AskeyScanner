@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -10,17 +9,18 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="15dp"
         android:layout_margin="1dp"
         android:background="@color/white"
-        android:gravity="center">
+        android:gravity="center"
+        android:padding="15dp">
+
         <ImageView
             android:id="@+id/image"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="2019"
             android:textColor="@color/black"
-            android:textSize="25dp"/>
+            android:textSize="25dp" />
 
         <TextView
             android:id="@+id/text"
@@ -28,6 +28,19 @@
             android:layout_height="wrap_content"
             android:text="2019"
             android:textColor="@color/black"
-            android:textSize="25dp"/>
+            android:textSize="25dp" />
     </RelativeLayout>
+
+    <ProgressBar
+        android:id="@+id/progress"
+        android:layout_width="match_parent"
+        android:layout_height="10dp"
+        android:layout_marginTop="50dp"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:max="100"
+        android:progress="10"
+        android:paddingLeft="15dp"
+        android:paddingRight="15dp"
+        android:progressDrawable="@drawable/progressbar"/>
+
 </RelativeLayout>

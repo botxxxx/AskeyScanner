@@ -22,33 +22,21 @@ import java.util.Collections;
 import java.util.List;
 
 import static com.askey.safe.Utils.getSDPath;
+import static com.askey.safe.Utils.mainAPK;
 import static com.askey.safe.Utils.testFile;
 
 public class MainActivity extends Activity {
+    public static final boolean sync = false;
     public static final boolean SD_Mode = true;
     public static final String TAG = "com.askey.safe";
-    public static final String[] apkName = new String[]{
-            /** must be used packageName.apk or packageName_version.apk */
-            "com.askey.record_v1.7.6.apk",
-            "com.askey.bit_v1.0.5.apk",
-            "com.luutinhit.assistivetouch.apk",
-            "com.askey.sensors_v1.0.2.apk"
-    };
-    public static final  String[] apkUrl = new String[]{
-            "https://drive.google.com/uc?id=1_0X1tVE5kP7aVvwAmyURC1KdfzFvU0PI&export=download",
-            "https://drive.google.com/uc?id=1NGykpRiTL-LpkBOyvsH7qoktNPfLBBpK&export=download",
-            "https://drive.google.com/uc?id=1-pno6yyNxIu_u-rHyHdTSfkxyU0NT-r8&export=download",
-            "https://drive.google.com/uc?id=1OKcNZFqcnoQKNt9YNvnWc_Sjp2VlNMvn&export=download"
-    };
     public static final String NO_SD_CARD = "SD card is not available!";
     public static boolean success = false;
-    public static ArrayList<String> read, apkPackage;
-
+    public static ArrayList<String> apkPackage;
+    public static ArrayList<apkItem> read;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
         if (checkPermission()) {
             showPermission();
         } else {
@@ -96,44 +84,72 @@ public class MainActivity extends Activity {
                 }
                 boolean delete = file.delete();
                 if (!delete) {
-                    read.add("delete fail");
+                    read.add(new apkItem("delete fail"));
                 }
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
-        if (!success) {
-            read.add(NO_SD_CARD);
+        if (!success) {//NO_SD_CARD
+            read.add(new apkItem(NO_SD_CARD));
         } else {
             //read.add("ready");
             getListOfApplications(this);
             apkPackage = new ArrayList<>();
-            for (String s : apkName) {
-                apkPackage.add(getPackageName(s));
+            for (apkManager s : Utils.apkList) {
+                apkPackage.add(getPackageName(s.apkName));
             }
         }
         updateUI(this);
         findViewById(R.id.btn_install).setOnClickListener((View v) -> {
             read.clear();
             updateUI(this);
-            boolean installed = false;
-            for (String s : apkName)
-                if (apkInstall(s))
-                    installed = true;
-            if (!installed) {
-                getListOfApplications(this);
-                Toast.makeText(this, "You has installed", Toast.LENGTH_SHORT).show();
-            }
+            if (checkApkFile())
+                checkInstall(this);
+            else
+                for (apkManager s : Utils.apkList)
+                    new DownloadApkAsyncTask(this).execute(s);
         });
         findViewById(R.id.btn_remove).setOnClickListener((View v) -> {
             read.clear();
             updateUI(this);
-            for (String s : apkPackage)
+            for (apkManager s : Utils.apkList) // Remove apk
+                removeAPK(s);
+            for (String s : apkPackage) // Uninstall application
                 apkUninstall(s);
+            apkUninstall(mainAPK.apkName); // Uninstall ManagerApplication
         });
     }
 
-    private String getPackageName(String s) {
+    public static boolean checkApkFile() {
+        for (apkManager s : Utils.apkList)
+            if (!new File(getSDPath() + s.apkName).exists()) {
+                return false;
+            }
+        return true;
+    }
+
+    public static void checkInstall(Context context) {
+        boolean installed = false;
+        for (apkManager s : Utils.apkList)
+            if (apkInstall(s.apkName, context))
+                installed = true;
+        if (!installed) {
+            getListOfApplications(context);
+            Toast.makeText(context, "You has installed", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void removeAPK(apkManager apk) {
+        File rm = new File(getSDPath(), apk.apkName);
+        if (rm.exists()) {
+            if (!rm.delete()) {
+                Toast.makeText(this, "apk delete failed!", Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
+    private static String getPackageName(String s) {
         String packageName = s.split("_")[0];
         if (s.split("_").length == 1)
             packageName = s.substring(0, s.length() - 4);
@@ -147,8 +163,7 @@ public class MainActivity extends Activity {
     public static void getListOfApplications(Context context) {
         read.clear();
         for (ResolveInfo ap : getApplications(context))
-            read.add(ap.loadLabel(context.getPackageManager()).toString()+
-                    "("+ap.activityInfo.packageName+")");/*application List*/
+            read.add(new apkItem(ap));/*application List*/
         updateUI(context);
     }
 
@@ -173,10 +188,10 @@ public class MainActivity extends Activity {
         }
     }
 
-    private boolean apkInstall(String apkName) {
+    private static boolean apkInstall(String apkName, Context context) {
         boolean apkExists = false;
         String packageName = getPackageName(apkName);
-        for (ResolveInfo ap : getApplications(this)) {
+        for (ResolveInfo ap : getApplications(context)) {
             if (ap.activityInfo.packageName.equals(packageName)) {
                 apkExists = true;
                 break;
@@ -189,12 +204,12 @@ public class MainActivity extends Activity {
                 File apkFile = new File(apkAbsolutePath);
                 if (apkFile.exists()) {
                     Log.d(TAG, "apkInstall, silent mode");
-                    new SilentInstallApkAsyncTask(this).execute(apkFile);
+                    new SilentInstallApkAsyncTask(context).execute(apkFile);
                 } else {
                     read.clear();
-                    read.add("The APK file does not exist");
-                    Toast.makeText(getApplicationContext(), "The APK file does not exist", Toast.LENGTH_SHORT).show();
-                    updateUI(this);
+                    read.add(new apkItem("The APK file does not exist"));
+                    Toast.makeText(context, "The APK file does not exist", Toast.LENGTH_SHORT).show();
+                    updateUI(context);
                 }
             }
         }
