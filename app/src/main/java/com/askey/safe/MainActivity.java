@@ -108,7 +108,8 @@ public class MainActivity extends Activity {
                 checkInstall(this);
             else
                 for (apkManager s : Utils.apkList)
-                    new DownloadApkAsyncTask(this).execute(s);
+                    if (!checkApkFile(s)) // ApkExists
+                        new DownloadApkAsyncTask(this).execute(s);
         });
         findViewById(R.id.btn_remove).setOnClickListener((View v) -> {
             read.clear();
@@ -119,6 +120,10 @@ public class MainActivity extends Activity {
                 apkUninstall(s);
             apkUninstall(mainAPK.apkName); // Uninstall ManagerApplication
         });
+    }
+
+    public static boolean checkApkFile(apkManager s) {
+        return new File(getSDPath() + s.apkName).exists();
     }
 
     public static boolean checkApkFile() {
