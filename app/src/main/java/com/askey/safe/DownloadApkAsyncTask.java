@@ -24,7 +24,6 @@ import static com.askey.safe.Utils.getSDPath;
 public class DownloadApkAsyncTask extends AsyncTask<apkManager, String, String> {
     @SuppressLint("StaticFieldLeak")
     public static Context mContext;
-    private ProgressDialog pDialog;
     private String point = "";
     private String apkName;
 
@@ -33,20 +32,13 @@ public class DownloadApkAsyncTask extends AsyncTask<apkManager, String, String> 
     }
 
     @SuppressLint("AuthLeak")
-    private static final String SMB_SERVER = "smb://hongren_su:id40123@10.1.96.111/";
+    private static final String SMB_SERVER = "smb://user:user@10.1.96.111/";
 
     /**
      * Before starting background thread Show Progress Bar Dialog
      */
     protected void onPreExecute() {
         super.onPreExecute();
-//        pDialog = new ProgressDialog(mContext);
-//        pDialog.setMessage("Downloading file. Please wait...");
-//        pDialog.setIndeterminate(false);
-//        pDialog.setMax(100);
-//        pDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
-//        pDialog.setCancelable(true);
-//        pDialog.show();
     }
 
     /**
@@ -116,13 +108,12 @@ public class DownloadApkAsyncTask extends AsyncTask<apkManager, String, String> 
     /**
      * Updating progress bar
      */
-
     protected void onProgressUpdate(String... values) {
         super.onProgressUpdate(values);
         if (values != null && values.length > 0) {
             int progress = Integer.parseInt(values[0]);
             read.set(Integer.parseInt(point), new apkItem("Download:" + apkName, progress));
-            updateUI(mContext);
+            updateUI();
             Log.e("Download", apkName + " " + progress + "%");
         }
     }
@@ -134,9 +125,7 @@ public class DownloadApkAsyncTask extends AsyncTask<apkManager, String, String> 
         if (progress.equals(""))
             Log.e("Download", apkName + " filed");
         // dismiss the dialog after the file was downloaded
-
         read.set(Integer.parseInt(point), new apkItem(apkName + (apkName.equals(progress) ? " completed" : " filed")));
-        updateUI(mContext);
-//        Toast.makeText(mContext, "apk:"+file_url, Toast.LENGTH_SHORT).show();
+        updateUI();
     }
 }

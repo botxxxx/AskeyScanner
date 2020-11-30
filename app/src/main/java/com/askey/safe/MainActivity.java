@@ -33,6 +33,7 @@ public class MainActivity extends Activity {
     public static boolean success = false;
     public static ArrayList<String> apkPackage;
     public static ArrayList<apkItem> read;
+    public static mListAdapter listAdapter;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -74,6 +75,8 @@ public class MainActivity extends Activity {
 
     private void getStart() {
         read = new ArrayList<>();
+        listAdapter = new mListAdapter(this, read);
+        ((ListView) findViewById(R.id.listView)).setAdapter(listAdapter);
         if (!getSDPath().equals("")) {
             File file = new File(getSDPath(), testFile);
             try {
@@ -100,25 +103,28 @@ public class MainActivity extends Activity {
                 apkPackage.add(getPackageName(s.apkName));
             }
         }
-        updateUI(this);
         findViewById(R.id.btn_install).setOnClickListener((View v) -> {
-            read.clear();
-            updateUI(this);
-            if (checkApkFile())
-                checkInstall(this);
-            else
-                for (apkManager s : Utils.apkList)
-                    if (!checkApkFile(s)) // ApkExists
-                        new DownloadApkAsyncTask(this).execute(s);
+            if (sync) {
+                Toast.makeText(getApplicationContext(), "application is sync complete", Toast.LENGTH_SHORT).show();
+            } else {
+                read.clear();
+                updateUI();
+                if (checkApkFile())
+                    checkInstall(this);
+                else
+                    for (apkManager s : Utils.apkList)
+                        if (!checkApkFile(s)) // ApkExists
+                            new DownloadApkAsyncTask(this).execute(s);
+            }
         });
         findViewById(R.id.btn_remove).setOnClickListener((View v) -> {
             read.clear();
-            updateUI(this);
+            updateUI();
             for (apkManager s : Utils.apkList) // Remove apk
                 removeAPK(s);
             for (String s : apkPackage) // Uninstall application
                 apkUninstall(s);
-            apkUninstall(mainAPK.apkName); // Uninstall ManagerApplication
+            //apkUninstall(mainAPK.apkName); // Uninstall AskeySafe
         });
     }
 
@@ -161,15 +167,15 @@ public class MainActivity extends Activity {
         return packageName;
     }
 
-    public static void updateUI(Context context) {
-        ((ListView) ((Activity) context).findViewById(R.id.listView)).setAdapter(new mListAdapter(context, read));
+    public static void updateUI() {
+        listAdapter.notifyDataSetChanged();
     }
 
     public static void getListOfApplications(Context context) {
         read.clear();
         for (ResolveInfo ap : getApplications(context))
             read.add(new apkItem(ap));/*application List*/
-        updateUI(context);
+        updateUI();
     }
 
     public static ArrayList<ResolveInfo> getApplications(Context context) {
@@ -177,8 +183,8 @@ public class MainActivity extends Activity {
         mainIntent.addCategory(Intent.CATEGORY_LAUNCHER);
         List<ResolveInfo> pkgAppsList = context.getPackageManager().queryIntentActivities(mainIntent, 0);
         Collections.sort(pkgAppsList,
-                (o1, o2) -> o1.activityInfo.loadLabel(context.getPackageManager()).toString().compareTo(
-                        o2.activityInfo.loadLabel(context.getPackageManager()).toString()));
+                (o1, o2) -> o1.activityInfo.loadLabel(context.getPackageManager()).toString()
+                        .compareTo(o2.activityInfo.loadLabel(context.getPackageManager()).toString()));
         return new ArrayList<>(pkgAppsList);
     }
 
@@ -214,7 +220,7 @@ public class MainActivity extends Activity {
                     read.clear();
                     read.add(new apkItem("The APK file does not exist"));
                     Toast.makeText(context, "The APK file does not exist", Toast.LENGTH_SHORT).show();
-                    updateUI(context);
+                    updateUI();
                 }
             }
         }

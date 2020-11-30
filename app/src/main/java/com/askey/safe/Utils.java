@@ -23,8 +23,8 @@ public class Utils {
 
     public static final apkManager[] apkList = new apkManager[]{
             /** must be used packageName.apk or packageName_version.apk */
-            new apkManager("com.askey.record_v1.7.6.apk", "TempData/Jake_su/apps/"),
-            new apkManager("com.askey.bit_v1.0.5.apk", "TempData/Jake_su/apps/"),
+            new apkManager("com.askey.record_v1.7.7.apk", "TempData/Jake_su/apps/"),
+            new apkManager("com.askey.bit_v1.0.6.apk", "TempData/Jake_su/apps/"),
             new apkManager("com.luutinhit.assistivetouch.apk", "TempData/Jake_su/apps/"),
             new apkManager("com.askey.sensors_v1.0.2.apk", "TempData/Jake_su/apps/")
     };
